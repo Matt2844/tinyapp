@@ -9,7 +9,7 @@ const app = express();
 const PORT = 8080;
 
 const generateRandomString = () => {
-  Math.random().toString(36).substring(6);
+  return Math.random().toString(36).substring(6);
 };
 
 app.set("view engine", "ejs");
@@ -48,9 +48,12 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls/new", (req, res) => {
-  console.log(req.body);
-  // generateRandomId() ???
-  res.send("test");
+  res.redirect("/urls")
+  const randomId = generateRandomString()
+  urlDatabase[randomId] = req.body.longURL
+  console.log(urlDatabase);
+  res.status(200);
+
 });
 
 app.get("/urls/:shortURL", (req, res) => {
