@@ -47,9 +47,10 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-app.post("/urls", (req, res) => {
+app.post("/urls/new", (req, res) => {
   console.log(req.body);
-  res.send("Ok");
+  urlDatabase = { shortURL: longURL };
+  res.send("/urls/:shortURL");
 });
 
 app.get("/urls/:shortURL", (req, res) => {
