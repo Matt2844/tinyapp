@@ -49,8 +49,8 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls/new", (req, res) => {
   console.log(req.body);
-  urlDatabase = { shortURL: longURL };
-  res.send("/urls/:shortURL");
+  // generateRandomId() ???
+  res.send("test");
 });
 
 app.get("/urls/:shortURL", (req, res) => {
