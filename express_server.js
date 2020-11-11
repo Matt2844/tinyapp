@@ -67,6 +67,12 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-app.post('/urls/:id', (re, res) => {
+app.post('/urls/:id', (req, res) => {
   res.redirect('/urls')
+})
+// The login in nav bar
+app.post('/login', (req, res) => {
+  let username = req.params.username;
+  let cookieLogin = req.params.username;
+  res.cookie(cookieLogin, username).send('Cookie is set')
 })
