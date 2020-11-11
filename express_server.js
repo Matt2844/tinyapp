@@ -20,8 +20,11 @@ const urlDatabase = {
 };
 
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser())
 
+// Home page
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -70,9 +73,14 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   res.redirect('/urls')
 })
+
 // The login in nav bar
-app.post('/login', (req, res) => {
-  let username = req.params.username;
-  let cookieLogin = req.params.username;
-  res.cookie(cookieLogin, username).send('Cookie is set')
+app.get('/login', (req, res) => {
+  res.render('login')
 })
+// Attaching a cookie to login user
+app.post('/login', (req, res) => {
+  let username = req.body.username
+  console.log(username);
+  res.cookie("login_cookie", username).redirect('/urls')
+}); 
