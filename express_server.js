@@ -37,10 +37,6 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/urls/tinyApp", (req, res) => {
-  res.render("urls_show");
-});
-
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
@@ -49,8 +45,26 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+
+app.get('/urls/register', (req, res) => {
+  const templateVars = {
+    username: req.cookies["login_cookie"],
+  };
+  res.render('urls_register', templateVars);
+})
+
+app.get("/urls/tinyApp", (req, res) => {
+  const templateVars = {
+    username: req.cookies["login_cookie"],
+  }
+  res.render("urls_show", templateVars);
+});
+
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {
+    username: req.cookies["login_cookie"],
+  }
+  res.render("urls_new", templateVars);
 });
 
 app.post("/urls/new", (req, res) => {
@@ -96,4 +110,7 @@ app.get('/logout', (req, res) => {
 app.post('/logout', (req, res) => {
   res.clearCookie("login_cookie");
   res.redirect('/urls');
-}); 
+});
+
+// The register form and rendering the template
+
