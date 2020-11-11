@@ -34,8 +34,8 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+app.get("/urls/tinyApp", (req, res) => {
+  res.render("urls_show");
 });
 
 app.get("/urls", (req, res) => {
@@ -62,7 +62,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
-  console.log(urlDatabase[req.params.shortURL]);
+  console.log(req.params.shortURL);
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 });
