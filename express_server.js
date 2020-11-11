@@ -42,7 +42,10 @@ app.get("/urls/tinyApp", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["login_cookie"],
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -83,4 +86,14 @@ app.post('/login', (req, res) => {
   let username = req.body.username
   console.log(username);
   res.cookie("login_cookie", username).redirect('/urls')
+});
+
+// The login, if user is logged in
+app.get('/logout', (req, res) => {
+  res.render('/logout');
+});
+
+app.post('/logout', (req, res) => {
+  res.clearCookie("login_cookie");
+  res.redirect('/urls');
 }); 

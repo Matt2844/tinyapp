@@ -9,11 +9,24 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+
         <!-- login form on nav bar -->
+
+        <!-- If logged in, display username and logout button -->
+        <!-- If logged out, display login placeholder with login button -->
+
+        <% if(username) { %>
+        <form action="/logout" method="POST">
+          <span>Logged in as: <%= username %></span>
+          <button type="submit">Logout</button>
+        </form>
+        <% } else { %>
         <form action="/login" method="POST">
-          <input type="text" name="username" placeholder="username" />
+          <input type="text" name="username" placeholder="Enter Username" />
           <button type="submit">Login</button>
         </form>
+        <% } %>
+
       </div>
     </div>
     </div>
