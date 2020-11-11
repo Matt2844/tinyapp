@@ -6,7 +6,7 @@ const { request } = require("express");
 
 const express = require("express");
 const app = express();
-const PORT = 8080;
+const PORT = 3000;
 
 const generateRandomString = () => {
   return Math.random().toString(36).substring(6);
