@@ -19,10 +19,20 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const userDatabase = {
+  "Matt": {
+    id: "abc321",
+    email: "example@gmail.com",
+    password: "123456",
+  },
+};
+
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser())
+
+const randomId = generateRandomString()
 
 // Home page
 app.get("/", (req, res) => {
@@ -45,7 +55,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-
+// To access register page from nav bar
 app.get('/urls/register', (req, res) => {
   const templateVars = {
     username: req.cookies["login_cookie"],
@@ -53,6 +63,7 @@ app.get('/urls/register', (req, res) => {
   res.render('urls_register', templateVars);
 })
 
+// To access tinyApp page from nav bar
 app.get("/urls/tinyApp", (req, res) => {
   const templateVars = {
     username: req.cookies["login_cookie"],
@@ -60,6 +71,7 @@ app.get("/urls/tinyApp", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// To access create a new url page from nav bar
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     username: req.cookies["login_cookie"],
@@ -67,13 +79,12 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
+// Generates the short url
 app.post("/urls/new", (req, res) => {
   res.redirect("/urls")
-  const randomId = generateRandomString()
   urlDatabase[randomId] = req.body.longURL
   console.log(urlDatabase);
   res.status(200);
-
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -95,6 +106,7 @@ app.post('/urls/:id', (req, res) => {
 app.get('/login', (req, res) => {
   res.render('login')
 })
+
 // Attaching a cookie to login user
 app.post('/login', (req, res) => {
   let username = req.body.username
@@ -107,10 +119,21 @@ app.get('/logout', (req, res) => {
   res.render('/logout');
 });
 
+// The login, if user is logged out
 app.post('/logout', (req, res) => {
   res.clearCookie("login_cookie");
   res.redirect('/urls');
 });
 
-// The register form and rendering the template
+// To add users id, email, password to database
+app.post('/register', (req, res) => {
+  console.log(req.body);
+  const newUser = {
+    id: generateRandomString(),
+    email: req.body.email,
+    password: req.body.password,
+  }
+  userDatabase[newUser.id] = newUser;
 
+  res.cookie("user_id", newUser.id).redirect('/urls')
+});
