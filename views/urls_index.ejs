@@ -22,15 +22,18 @@
         <tr>
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
+          <th scope="col">Submitted By:</th>
           <th scope="col">Edit URL</th>
           <th scope="col">Delete URL</th>
+
         </tr>
       </thread>
       <tbody>
         <% for(let url in urls) { %>
         <tr>
           <td><%= url %></td>
-          <td><%= urls[url] %></td>
+          <td><%= urls[url].longURL %></td>
+          <td><%= allUsers[urls[url].userID].email %></td>
           <td>
             <button>Edit</button>
           </td>

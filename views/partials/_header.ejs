@@ -10,8 +10,9 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
         <a class="nav-item nav-link" href="/urls/register">Register</a>
-        <% if(user || userLogin) { %>
+        <% if(user) { %>
         <a class="nav-item nav-link" href="/urls/logout">Logout</a>
+        <a class="nav-item nav-link" style="cursor: default; color: black;">Hi, <%= user.email %></a>
         <% } else { %>
         <a class="nav-item nav-link" href="/urls/login" style="color:rgb(0, 0, 0);">Login</a>
         <% } %>

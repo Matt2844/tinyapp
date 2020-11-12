@@ -15,17 +15,25 @@ const generateRandomString = () => {
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "abc321" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "abc321" },
+  i3Babc: { longURL: "https://www.youtube.com", userID: "xyz321" }
 };
 
 const userDatabase = {
-  "Matt": {
+  "abc321": {
     id: "abc321",
     email: "example@gmail.com",
     password: "123456",
   },
+  "xyz321": {
+    id: "xyz321",
+    email: "exampletwo@gmail.com",
+    password: "123",
+  },
 };
+
+
 
 // Helper function, returns list of emails in userDatabase
 const emailsInDatabase = (userDatabase) => {
@@ -63,7 +71,7 @@ app.get("/urls", (req, res) => {
   const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
     urls: urlDatabase,
-    user: userDatabase[userId],
+    user: userDatabase[userId], allUsers: userDatabase,
     userLogin: userLoggedIn,
 
   }
@@ -180,10 +188,6 @@ app.post('/register', (req, res) => {
 });
 
 
-
-
-
-
 // LOGIN
 
 // Handler for the login page 
@@ -197,27 +201,25 @@ app.post('/login', (req, res) => {
   const userEmailPassword = (userDatabase) => {
     const userVals = Object.values(userDatabase);
     for (let i = 0; i < userVals.length; i++) {
-      if (email !== userVals[i].email) {
-        return res.status(400).send('Username or password does not exist.')
-      } else if (password != userVals[i].password) {
-        return res.status(400).send('Username or password does not exist.')
+      if (email === userVals[i].email && password === userVals[i].password) {
+        return userVals[i].id
       }
     }
+    return false;
   };
-  userEmailPassword(userDatabase);
-  // Attach a cookie
-  const loginCookieVal = generateRandomString()
-  res.cookie("user_login", loginCookieVal).redirect('/urls')
+  const userID = userEmailPassword(userDatabase)
+  if (userID) {
+    res.cookie("user_id", userID);
+    res.redirect('/urls');
+  } else {
+    res.status(400).send('Username or password does not exist.')
+  }
 });
-
-
-
 
 
 // Handler for the logout page
 app.post('/logout', (req, res) => {
   res.clearCookie("user_id");
-  res.clearCookie("user_login");
   res.redirect("/urls")
 });
 
