@@ -83,14 +83,14 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-// Generates the short url
-app.post("/urls/new", (req, res) => {
-  res.redirect("/urls")
-  urlDatabase[randomId] = req.body.longURL
-  console.log(urlDatabase);
-  res.status(200);
-
-});
+// To access login page from nav bar
+app.get('/urls/login', (req, res) => {
+  const userId = req.cookies["user_id"]
+  const templateVars = {
+    user: userDatabase[userId],
+  }
+  res.render('urls_login', templateVars);
+})
 
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies["user_id"]
@@ -100,6 +100,15 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL]
   }
   res.render("urls_show", templateVars);
+});
+
+// Generates the short url
+app.post("/urls/new", (req, res) => {
+  res.redirect("/urls")
+  urlDatabase[randomId] = req.body.longURL
+  console.log(urlDatabase);
+  res.status(200);
+
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
@@ -112,15 +121,15 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls')
 })
 
-// The login, if user is logged in
-app.get('/logout', (req, res) => {
-  res.render('/logout');
-});
+// // The login, if user is logged in
+// app.get('/logout', (req, res) => {
+//   res.render('/logout');
+// });
 
-// The login in nav bar
-app.get('/login', (req, res) => {
-  res.render('login')
-})
+// // The login in nav bar
+// app.get('/login', (req, res) => {
+//   res.render('login')
+// })
 
 // Attaching a cookie to login user
 app.post('/login', (req, res) => {
@@ -130,11 +139,11 @@ app.post('/login', (req, res) => {
 
 
 
-// The login, if user is logged out
-app.post('/logout', (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect('/urls');
-});
+// // The login, if user is logged out
+// app.post('/logout', (req, res) => {
+//   res.clearCookie("user_id");
+//   res.redirect('/urls');
+// });
 
 // To add users id, email, password to database
 app.post('/register', (req, res) => {
@@ -149,5 +158,6 @@ app.post('/register', (req, res) => {
     password: req.body.password,
   }
   userDatabase[newUser.id] = newUser;
+
   res.cookie("user_id", newUser.id).redirect('/urls')
 });
