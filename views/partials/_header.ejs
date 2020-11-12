@@ -16,9 +16,9 @@
         <!-- If logged in, display username and logout button -->
         <!-- If logged out, display login placeholder with login button -->
 
-        <% if(username) { %>
+        <% if(user) { %>
         <form action="/logout" method="POST">
-          <span>Logged in as: <%= username %></span>
+          <span>Logged in as: <%= user.email %></span>
           <button type="submit">Logout</button>
         </form>
         <% } else { %>

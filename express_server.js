@@ -48,33 +48,37 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  const userId = req.cookies["user_id"]
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["login_cookie"],
-  };
+    user: userDatabase[userId],
+  }
   res.render("urls_index", templateVars);
 });
 
 // To access register page from nav bar
 app.get('/urls/register', (req, res) => {
+  const userId = req.cookies["user_id"]
   const templateVars = {
-    username: req.cookies["login_cookie"],
-  };
+    user: userDatabase[userId],
+  }
   res.render('urls_register', templateVars);
 })
 
 // To access tinyApp page from nav bar
 app.get("/urls/tinyApp", (req, res) => {
+  const userId = req.cookies["user_id"]
   const templateVars = {
-    username: req.cookies["login_cookie"],
+    user: userDatabase[userId],
   }
   res.render("urls_show", templateVars);
 });
 
 // To access create a new url page from nav bar
 app.get("/urls/new", (req, res) => {
+  const userId = req.cookies["user_id"]
   const templateVars = {
-    username: req.cookies["login_cookie"],
+    user: userDatabase[userId],
   }
   res.render("urls_new", templateVars);
 });
@@ -85,10 +89,16 @@ app.post("/urls/new", (req, res) => {
   urlDatabase[randomId] = req.body.longURL
   console.log(urlDatabase);
   res.status(200);
+
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const userId = req.cookies["user_id"]
+  const templateVars = {
+    user: userDatabase[userId],
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  }
   res.render("urls_show", templateVars);
 });
 
@@ -102,6 +112,11 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls')
 })
 
+// The login, if user is logged in
+app.get('/logout', (req, res) => {
+  res.render('/logout');
+});
+
 // The login in nav bar
 app.get('/login', (req, res) => {
   res.render('login')
@@ -110,18 +125,14 @@ app.get('/login', (req, res) => {
 // Attaching a cookie to login user
 app.post('/login', (req, res) => {
   let username = req.body.username
-  console.log(username);
-  res.cookie("login_cookie", username).redirect('/urls')
+  res.cookie("user_id", username).redirect('/urls')
 });
 
-// The login, if user is logged in
-app.get('/logout', (req, res) => {
-  res.render('/logout');
-});
+
 
 // The login, if user is logged out
 app.post('/logout', (req, res) => {
-  res.clearCookie("login_cookie");
+  res.clearCookie("user_id");
   res.redirect('/urls');
 });
 
@@ -134,6 +145,7 @@ app.post('/register', (req, res) => {
     password: req.body.password,
   }
   userDatabase[newUser.id] = newUser;
+  console.log(newUser);
 
   res.cookie("user_id", newUser.id).redirect('/urls')
 });
