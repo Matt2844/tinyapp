@@ -27,6 +27,9 @@ const userDatabase = {
   },
 };
 
+// Array of user emails, updates with new entries
+const emailDatabase = ["example@gmail.com"]
+
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -49,9 +52,12 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"]
+  const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
     urls: urlDatabase,
     user: userDatabase[userId],
+    userLogin: userLoggedIn,
+
   }
   res.render("urls_index", templateVars);
 });
@@ -59,8 +65,10 @@ app.get("/urls", (req, res) => {
 // To access register page from nav bar
 app.get('/urls/register', (req, res) => {
   const userId = req.cookies["user_id"]
+  const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
     user: userDatabase[userId],
+    userLogin: userLoggedIn
   }
   res.render('urls_register', templateVars);
 })
@@ -68,8 +76,10 @@ app.get('/urls/register', (req, res) => {
 // To access tinyApp page from nav bar
 app.get("/urls/tinyApp", (req, res) => {
   const userId = req.cookies["user_id"]
+  const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
     user: userDatabase[userId],
+    userLogin: userLoggedIn,
   }
   res.render("urls_show", templateVars);
 });
@@ -77,8 +87,10 @@ app.get("/urls/tinyApp", (req, res) => {
 // To access create a new url page from nav bar
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"]
+  const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
     user: userDatabase[userId],
+    userLogin: userLoggedIn
   }
   res.render("urls_new", templateVars);
 });
@@ -86,23 +98,38 @@ app.get("/urls/new", (req, res) => {
 // To access login page from nav bar
 app.get('/urls/login', (req, res) => {
   const userId = req.cookies["user_id"]
+  const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
     user: userDatabase[userId],
+    userLogin: userLoggedIn
   }
   res.render('urls_login', templateVars);
 })
 
+app.get('/urls/logout', (req, res) => {
+  const userId = req.cookies["user_id"]
+  const userLoggedIn = req.cookies["user_login"]
+  const templateVars = {
+    user: userDatabase[userId],
+    userLogin: userLoggedIn
+  }
+  res.render('urls_login', templateVars);
+})
+
+// Step 1/2 generates the short url
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies["user_id"]
+  const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
     user: userDatabase[userId],
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    longURL: urlDatabase[req.params.shortURL],
+    userLogin: userLoggedIn
   }
   res.render("urls_show", templateVars);
 });
 
-// Generates the short url
+// Step 2/2 generates the short url
 app.post("/urls/new", (req, res) => {
   res.redirect("/urls")
   urlDatabase[randomId] = req.body.longURL
@@ -111,6 +138,7 @@ app.post("/urls/new", (req, res) => {
 
 });
 
+// Delete a url from the url list
 app.post('/urls/:shortURL/delete', (req, res) => {
   console.log(req.params.shortURL);
   delete urlDatabase[req.params.shortURL];
@@ -121,36 +149,18 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls')
 })
 
-// // The login, if user is logged in
-// app.get('/logout', (req, res) => {
-//   res.render('/logout');
-// });
 
-// // The login in nav bar
-// app.get('/login', (req, res) => {
-//   res.render('login')
-// })
-
-// Attaching a cookie to login user
-app.post('/login', (req, res) => {
-  let username = req.body.username
-  res.cookie("user_id", username).redirect('/urls')
-});
-
-
-
-// // The login, if user is logged out
-// app.post('/logout', (req, res) => {
-//   res.clearCookie("user_id");
-//   res.redirect('/urls');
-// });
 
 // To add users id, email, password to database
 app.post('/register', (req, res) => {
   const { email, password } = req.body
-
   if (email === "" || password === "") {
     return res.status(400).send('Registration error. Please make sure to fill in email and password.');
+  }
+  for (let existingEmail of emailDatabase) {
+    if (email === existingEmail) {
+      return res.status(400).send('Sorry that email is already in use.')
+    }
   }
   const newUser = {
     id: generateRandomString(),
@@ -158,6 +168,19 @@ app.post('/register', (req, res) => {
     password: req.body.password,
   }
   userDatabase[newUser.id] = newUser;
-
+  console.log(email);
+  emailDatabase.push(email);
+  console.log(emailDatabase);
   res.cookie("user_id", newUser.id).redirect('/urls')
 });
+
+// Handler for the login page
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  if (email === "" || password === "") {
+    return res.status(400).send('Please fill out login with your email and password.');
+  }
+  // need to include authentication check 
+  const loginCookieVal = generateRandomString()
+  res.cookie("user_login", loginCookieVal).redirect('/urls')
+}); 
