@@ -180,6 +180,7 @@ app.post('/urls/:id', (req, res) => {
 app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (email === "" || password === "") {
     return res.status(400).send('Registration error. Please make sure to fill in email and password.');
@@ -205,7 +206,10 @@ app.post('/register', (req, res) => {
 
 // Handler for the login page 
 app.post('/login', (req, res) => {
-  const { email, password } = req.body;
+  const email = req.body.email;
+  const password = req.body.email;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   // If login is left blank
   if (email === "" || password === "") {
     return res.status(400).send('Please fill out login with your email and password.');
@@ -214,8 +218,8 @@ app.post('/login', (req, res) => {
   const userEmailPassword = (userDatabase) => {
     const userVals = Object.values(userDatabase);
     for (let i = 0; i < userVals.length; i++) {
-      if (email === userVals[i].email && password === userVals[i].password) {
-        return userVals[i].id
+      if (email === userVals[i].email && bcrypt.compareSync(password, hashedPassword)) {
+        return userVals[i].id;
       }
     }
     return false;
@@ -237,3 +241,4 @@ app.post('/logout', (req, res) => {
 });
 
 
+// password === userVals[i].password)
