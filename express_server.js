@@ -138,14 +138,16 @@ app.post('/logout', (req, res) => {
 
 // To add users id, email, password to database
 app.post('/register', (req, res) => {
-  console.log(req.body);
+  const { email, password } = req.body
+
+  if (email === "" || password === "") {
+    return res.status(400).send('Registration error. Please make sure to fill in email and password.');
+  }
   const newUser = {
     id: generateRandomString(),
     email: req.body.email,
     password: req.body.password,
   }
   userDatabase[newUser.id] = newUser;
-  console.log(newUser);
-
   res.cookie("user_id", newUser.id).redirect('/urls')
 });
