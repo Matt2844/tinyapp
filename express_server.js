@@ -106,6 +106,7 @@ app.get('/urls/login', (req, res) => {
   res.render('urls_login', templateVars);
 })
 
+// To access logout page from nav bar when logged in
 app.get('/urls/logout', (req, res) => {
   const userId = req.cookies["user_id"]
   const userLoggedIn = req.cookies["user_login"]
@@ -113,7 +114,7 @@ app.get('/urls/logout', (req, res) => {
     user: userDatabase[userId],
     userLogin: userLoggedIn
   }
-  res.render('urls_login', templateVars);
+  res.render('urls_logout', templateVars);
 })
 
 // Step 1/2 generates the short url
@@ -149,8 +150,6 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls')
 })
 
-
-
 // To add users id, email, password to database
 app.post('/register', (req, res) => {
   const { email, password } = req.body
@@ -174,13 +173,19 @@ app.post('/register', (req, res) => {
   res.cookie("user_id", newUser.id).redirect('/urls')
 });
 
-// Handler for the login page
+// Handler for the login page (needs to be updated for edge cases)
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   if (email === "" || password === "") {
     return res.status(400).send('Please fill out login with your email and password.');
   }
-  // need to include authentication check 
   const loginCookieVal = generateRandomString()
   res.cookie("user_login", loginCookieVal).redirect('/urls')
-}); 
+});
+
+// Handler for the logout page
+app.post('/logout', (req, res) => {
+  res.clearCookie("user_id");
+  res.clearCookie("user_login");
+  res.redirect("/urls")
+});
