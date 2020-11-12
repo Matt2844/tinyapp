@@ -27,6 +27,14 @@ const userDatabase = {
   },
 };
 
+// Helper function, returns list of emails in userDatabase
+const emailsInDatabase = (userDatabase) => {
+  const userVals = Object.values(userDatabase);
+  for (let i = 0; i < userVals.length; i++) {
+    return userVals[i].email;
+  }
+};
+
 // Array of user emails, updates with new entries
 const emailDatabase = ["example@gmail.com"]
 
@@ -167,21 +175,45 @@ app.post('/register', (req, res) => {
     password: req.body.password,
   }
   userDatabase[newUser.id] = newUser;
-  console.log(email);
   emailDatabase.push(email);
-  console.log(emailDatabase);
+  console.log(emailsInDatabase(userDatabase));
   res.cookie("user_id", newUser.id).redirect('/urls')
 });
 
-// Handler for the login page (needs to be updated for edge cases)
+
+
+
+
+
+// LOGIN
+
+// Handler for the login page 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
+  // If login is left blank
   if (email === "" || password === "") {
     return res.status(400).send('Please fill out login with your email and password.');
   }
+  // If password or email does not match userDatabase
+  const userEmailPassword = (userDatabase) => {
+    const userVals = Object.values(userDatabase);
+    for (let i = 0; i < userVals.length; i++) {
+      if (email !== userVals[i].email) {
+        return res.status(400).send('Username or password does not exist.')
+      } else if (password != userVals[i].password) {
+        return res.status(400).send('Username or password does not exist.')
+      }
+    }
+  };
+  userEmailPassword(userDatabase);
+  // Attach a cookie
   const loginCookieVal = generateRandomString()
   res.cookie("user_login", loginCookieVal).redirect('/urls')
 });
+
+
+
+
 
 // Handler for the logout page
 app.post('/logout', (req, res) => {
@@ -190,5 +222,4 @@ app.post('/logout', (req, res) => {
   res.redirect("/urls")
 });
 
-// git merge test
-"test"
+
