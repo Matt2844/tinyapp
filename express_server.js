@@ -51,6 +51,10 @@ const cookieParser = require("cookie-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser())
 
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
+
 const randomId = generateRandomString()
 
 // Home page
@@ -66,6 +70,7 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// List of URLs page
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"]
   const userLoggedIn = req.cookies["user_login"]
@@ -83,7 +88,7 @@ app.get('/urls/register', (req, res) => {
   const userId = req.cookies["user_id"]
   const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
-    user: userDatabase[userId],
+    user: userDatabase[userId], allUsers: userDatabase,
     userLogin: userLoggedIn
   }
   res.render('urls_register', templateVars);
@@ -94,7 +99,7 @@ app.get("/urls/tinyApp", (req, res) => {
   const userId = req.cookies["user_id"]
   const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
-    user: userDatabase[userId],
+    user: userDatabase[userId], allUsers: userDatabase,
     userLogin: userLoggedIn,
   }
   res.render("urls_show", templateVars);
@@ -105,7 +110,7 @@ app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"]
   const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
-    user: userDatabase[userId],
+    user: userDatabase[userId], allUsers: userDatabase,
     userLogin: userLoggedIn
   }
   res.render("urls_new", templateVars);
@@ -116,7 +121,7 @@ app.get('/urls/login', (req, res) => {
   const userId = req.cookies["user_id"]
   const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
-    user: userDatabase[userId],
+    user: userDatabase[userId], allUsers: userDatabase,
     userLogin: userLoggedIn
   }
   res.render('urls_login', templateVars);
@@ -127,7 +132,7 @@ app.get('/urls/logout', (req, res) => {
   const userId = req.cookies["user_id"]
   const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
-    user: userDatabase[userId],
+    user: userDatabase[userId], allUsers: userDatabase,
     userLogin: userLoggedIn
   }
   res.render('urls_logout', templateVars);
@@ -138,7 +143,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies["user_id"]
   const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
-    user: userDatabase[userId],
+    user: userDatabase[userId], allUsers: userDatabase,
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
     userLogin: userLoggedIn
@@ -148,7 +153,11 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // Step 2/2 generates the short url
 app.post("/urls", (req, res) => {
-  urlDatabase[randomId] = req.body.longURL
+  const randomID = generateRandomString();
+  urlDatabase[randomID] = {
+    longURL: req.body.longURL,
+    userID: req.cookies["user_id"]
+  }
   console.log(urlDatabase);
   res.status(200);
   res.redirect("/urls")
@@ -156,7 +165,7 @@ app.post("/urls", (req, res) => {
 
 // Delete a url from the url list
 app.post('/urls/:shortURL/delete', (req, res) => {
-  console.log(req.params.shortURL);
+
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 });
@@ -165,9 +174,13 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls')
 })
 
+// REGISTER
+
 // To add users id, email, password to database
 app.post('/register', (req, res) => {
-  const { email, password } = req.body
+  const email = req.body.email;
+  const password = req.body.password;
+
   if (email === "" || password === "") {
     return res.status(400).send('Registration error. Please make sure to fill in email and password.');
   }
