@@ -139,12 +139,11 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 // Step 2/2 generates the short url
-app.post("/urls/new", (req, res) => {
-  res.redirect("/urls")
+app.post("/urls", (req, res) => {
   urlDatabase[randomId] = req.body.longURL
   console.log(urlDatabase);
   res.status(200);
-
+  res.redirect("/urls")
 });
 
 // Delete a url from the url list
