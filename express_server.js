@@ -171,6 +171,11 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls');
 })
 
+// Redirect after Edit button is clicked
+app.post('/urls', (res, req) => {
+  res.render('urls_show');
+});
+
 // --- Register Page --- (when a user tries to register)
 app.post('/register', (req, res) => {
   const email = req.body.email;
