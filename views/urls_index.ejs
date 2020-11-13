@@ -38,7 +38,11 @@
             <button>Edit</button>
           </td>
           <td>
-            <form method="POST" action="/urls/9sm5xK/delete"><button>Delete</button></form>
+            <% if (user) { %>
+            <form method="POST" action="/urls/<%= url %>/delete"><button>Delete</button></form>
+            <% } else { %>
+            <button>N/A</button>
+            <% } %>
           </td>
         </tr>
         <% } %>
