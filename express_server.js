@@ -121,7 +121,7 @@ app.get('/urls/logout', (req, res) => {
   res.render('urls_logout', templateVars);
 })
 
-// Step 1/2 generates the short url
+// Gets the short url
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies["user_id"];
   const userLoggedIn = req.cookies["user_login"];
@@ -135,7 +135,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// Step 2/2 generates the short url
+// Gets the short url continued
 app.post("/urls", (req, res) => {
   const randomID = generateRandomString();
 
@@ -161,11 +161,6 @@ app.post('/urls/:id', (req, res) => {
   urlDatabase[shortURL].longURL = newLongURL;
   res.redirect('/urls');
 })
-
-// Edit a url from the "TinyApp" page
-
-
-
 
 // --- Register Page --- (when a user tries to register)
 app.post('/register', (req, res) => {
@@ -236,5 +231,3 @@ app.post('/logout', (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/urls");
 });
-
-// END
