@@ -35,7 +35,7 @@
           <td><%= urls[url].longURL %></td>
           <td><%= allUsers[urls[url].userID].email %></td>
           <td>
-            <button>Edit</button>
+            <a href="urls/<%= url %>"><button>Edit</button></a>
           </td>
           <td>
             <% if (user) { %>

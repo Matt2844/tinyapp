@@ -85,18 +85,6 @@ app.get('/urls/register', (req, res) => {
   res.render('urls_register', templateVars);
 });
 
-// --- "TinyApp" Page --- 
-app.get("/urls/tinyApp", (req, res) => {
-  const userId = req.cookies["user_id"];
-  const userLoggedIn = req.cookies["user_login"];
-  const templateVars = {
-    user: userDatabase[userId], allUsers: userDatabase,
-    userLogin: userLoggedIn,
-  }
-
-  res.render("urls_show", templateVars);
-});
-
 // --- "Create New URL" Page ---
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
@@ -140,7 +128,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     user: userDatabase[userId], allUsers: userDatabase,
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     userLogin: userLoggedIn
   }
 
@@ -168,13 +156,16 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 // Redirect after url is deleted
 app.post('/urls/:id', (req, res) => {
+  const newLongURL = req.body.longURL;
+  const shortURL = req.params.id;
+  urlDatabase[shortURL].longURL = newLongURL;
   res.redirect('/urls');
 })
 
-// Redirect after Edit button is clicked
-app.post('/urls', (res, req) => {
-  res.render('urls_show');
-});
+// Edit a url from the "TinyApp" page
+
+
+
 
 // --- Register Page --- (when a user tries to register)
 app.post('/register', (req, res) => {
