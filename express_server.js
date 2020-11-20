@@ -196,8 +196,8 @@ app.post('/register', (req, res) => {
 // --- Login Page --- (when user hits submit button)
 app.post('/login', (req, res) => {
   const email = req.body.email;
-  const password = req.body.email;
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const password = req.body.password;
+
 
   // If login is left blank
   if (email === "" || password === "") {
@@ -209,7 +209,17 @@ app.post('/login', (req, res) => {
     const userVals = Object.values(userDatabase);
 
     for (let i = 0; i < userVals.length; i++) {
-      if (email === userVals[i].email && bcrypt.compareSync(password, hashedPassword)) {
+      if (email === userVals[i].email) {
+        const hash = userVals[i].password;
+        bcrypt.compare(password, hash, function(err, isMatch) {
+          if (err) {
+            throw err
+          } else if (password === userVals[i].password) {
+            console.log("Password is a match");
+          } else {
+            return res.status(401).send('wrong email or password')
+          }
+        })
         return userVals[i].id;
       }
     }

@@ -15,6 +15,8 @@
 
   <%- include ('partials/_header') %>
 
+  <% if(user) { %>
+
   <main style="margin: 1em;">
     <h3>My URLs</h3>
     <table class="table">
@@ -35,10 +37,14 @@
           <td><%= urls[url].longURL %></td>
           <td><%= allUsers[urls[url].userID].email %></td>
           <td>
+            <% if (user.email === allUsers[urls[url].userID].email ) { %>
             <a href="urls/<%= url %>"><button>Edit</button></a>
+            <% } else { %>
+            <button>N/A</button>
+            <% } %>
           </td>
           <td>
-            <% if (user) { %>
+            <% if (user.email === allUsers[urls[url].userID].email ) { %>
             <form method="POST" action="/urls/<%= url %>/delete"><button>Delete</button></form>
             <% } else { %>
             <button>N/A</button>
@@ -49,6 +55,21 @@
       </tbody>
     </table>
   </main>
+
+  <% } else { %>
+
+  <div class="login-redirect-container" style="margin-top: 50px; margin-left: 20px;">
+    <h3>You need to be logged in to see the list of URLS.</h3><br>
+    <span>You will be redirected to the Login page in a few seconds.</span>
+    <script>
+      setTimeout(function() {
+        window.location.href = "/urls/login";
+      }, 2000);
+    </script>
+  </div>
+
+  <% } %>
+
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
