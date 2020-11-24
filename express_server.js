@@ -135,6 +135,12 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Redirect the short url to long url
+app.get('/u/:shortURL', (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  res.redirect(longURL);
+});
+
 // Gets the short url continued
 app.post("/urls", (req, res) => {
   const randomID = generateRandomString();

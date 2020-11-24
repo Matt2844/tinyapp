@@ -32,6 +32,7 @@
       </thread>
       <tbody>
         <% for(let url in urls) { %>
+        <% if (user.email === allUsers[urls[url].userID].email ) { %>
         <tr>
           <td><%= url %></td>
           <td><%= urls[url].longURL %></td>
@@ -39,15 +40,12 @@
           <td>
             <% if (user.email === allUsers[urls[url].userID].email ) { %>
             <a href="urls/<%= url %>"><button>Edit</button></a>
-            <% } else { %>
-            <button>N/A</button>
+            <% } %>
             <% } %>
           </td>
           <td>
             <% if (user.email === allUsers[urls[url].userID].email ) { %>
             <form method="POST" action="/urls/<%= url %>/delete"><button>Delete</button></form>
-            <% } else { %>
-            <button>N/A</button>
             <% } %>
           </td>
         </tr>
