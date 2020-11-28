@@ -204,13 +204,13 @@ app.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-
   // If login is left blank
   if (email === "" || password === "") {
     return res.status(400).send('Please fill out login with your email and password.');
   }
 
-  // If password or email does not match userDatabase
+
+  // If password or email does, or does not match userDatabase
   const userEmailPassword = (userDatabase) => {
     const userVals = Object.values(userDatabase);
 
@@ -218,18 +218,16 @@ app.post('/login', (req, res) => {
       if (email === userVals[i].email) {
         const hash = userVals[i].password;
         bcrypt.compare(password, hash, function(err, isMatch) {
-          if (err) {
-            throw err
-          } else if (password === userVals[i].password) {
+
+          if (password === userVals[i].password) {
             console.log("Password is a match");
-          } else {
-            return res.status(401).send('wrong email or password')
+            return userVals[i].id;
+          } else if (password !== userVals[i].password) {
+            console.log("wrong password");
           }
-        })
-        return userVals[i].id;
+        });
       }
     }
-    return false;
   };
 
   const userID = userEmailPassword(userDatabase);
