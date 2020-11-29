@@ -221,9 +221,12 @@ app.post('/login', (req, res) => {
 
           if (password === userVals[i].password) {
             console.log("Password is a match");
-            return userVals[i].id;
-          } else if (password !== userVals[i].password) {
-            console.log("wrong password");
+            const userID = userVals[i].id;
+            res.cookie("user_id", userID)
+            res.redirect('/urls');
+          } else {
+            console.log("wrong password or username");
+            res.status(400).send('Username or password does not exist.')
           }
         });
       }
@@ -232,12 +235,14 @@ app.post('/login', (req, res) => {
 
   const userID = userEmailPassword(userDatabase);
 
-  if (userID) {
-    res.cookie("user_id", userID);
-    res.redirect('/urls');
-  } else {
-    res.status(400).send('Username or password does not exist.');
-  }
+  // if (password !== userVals[i].password)
+
+  // if (userID) {
+  //   res.cookie("user_id", userID);
+  //   res.redirect('/urls');
+  // } else {
+  //   res.status(400).send('Username or password does not exist.');
+  // }
 });
 
 // Clears cookie when user logs out
