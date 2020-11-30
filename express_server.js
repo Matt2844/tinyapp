@@ -182,7 +182,7 @@ app.post('/register', (req, res) => {
   // If email already exits
   for (let existingEmail of emailDatabase) {
     if (email === existingEmail) {
-      return res.status(400).send('Sorry that email is already in use.')
+      return res.status(400).send('Sorry that email is already in use.');
     }
   }
 
@@ -217,32 +217,23 @@ app.post('/login', (req, res) => {
     for (let i = 0; i < userVals.length; i++) {
       if (email === userVals[i].email) {
         const hash = userVals[i].password;
-        bcrypt.compare(password, hash, function(err, isMatch) {
+        const isMatch = bcrypt.compareSync(password, hash);
 
-          if (password === userVals[i].password) {
-            console.log("Password is a match");
-            const userID = userVals[i].id;
-            res.cookie("user_id", userID)
-            res.redirect('/urls');
-          } else {
-            console.log("wrong password or username");
-            res.status(400).send('Username or password does not exist.')
-          }
-        });
+        if (isMatch) {
+          console.log("Password is a match");
+          const userID = userVals[i].id;
+          res.cookie("user_id", userID);
+          res.redirect('/urls');
+        } else {
+          console.log("wrong password or username");
+          res.status(400).send('Username or password does not exist.');
+        };
       }
     }
   };
 
   const userID = userEmailPassword(userDatabase);
 
-  // if (password !== userVals[i].password)
-
-  // if (userID) {
-  //   res.cookie("user_id", userID);
-  //   res.redirect('/urls');
-  // } else {
-  //   res.status(400).send('Username or password does not exist.');
-  // }
 });
 
 // Clears cookie when user logs out
