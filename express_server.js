@@ -138,7 +138,13 @@ app.get("/urls/:shortURL", (req, res) => {
 // Redirect the short url to long url
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  const userId = req.cookies["user_id"];
+  const userLoggedIn = req.cookies["user_login"];
+  if (req.params.shortURL === userId) {
+    res.redirect(longURL);
+  } else {
+    res.send('Sorry that is not your url, or you need to be logged in.')
+  }
 });
 
 // Gets the short url continued
@@ -217,7 +223,7 @@ app.post('/login', (req, res) => {
     for (let i = 0; i < userVals.length; i++) {
       if (email === userVals[i].email) {
         const hash = userVals[i].password;
-        const isMatch = bcrypt.compareSync(password, hash);
+        const isMatch = bcrypt.compare(password, hash);
 
         if (isMatch) {
           console.log("Password is a match");
@@ -225,6 +231,7 @@ app.post('/login', (req, res) => {
           res.cookie("user_id", userID);
           res.redirect('/urls');
         } else {
+          console.log(password, hash);
           console.log("wrong password or username");
           res.status(400).send('Username or password does not exist.');
         };
