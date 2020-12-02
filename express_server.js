@@ -131,19 +131,24 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL].longURL,
     userLogin: userLoggedIn
   }
+  if (userId === urlDatabase[req.params.shortURL].userID) {
+    res.render("urls_show", templateVars);
+  } else {
+    res.status(400).send('Sorry you do not own this url.')
+  }
 
-  res.render("urls_show", templateVars);
+
 });
 
 // Redirect the short url to long url
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  const userId = req.cookies["user_id"];
-  const userLoggedIn = req.cookies["user_login"];
-  if (req.params.shortURL === userId) {
+  // const userId = req.cookies["user_id"];
+  // const userLoggedIn = req.cookies["user_login"];
+  if (longURL) {
     res.redirect(longURL);
   } else {
-    res.send('Sorry that is not your url, or you need to be logged in.')
+    res.send('Sorry the short url does not exist.')
   }
 });
 
@@ -235,6 +240,8 @@ app.post('/login', (req, res) => {
           console.log("wrong password or username");
           res.status(400).send('Username or password does not exist.');
         };
+      } else if (email !== userVals[i].email) {
+        res.status(400).send('Username or password does not exist')
       }
     }
   };
