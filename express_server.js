@@ -58,6 +58,11 @@ app.get("/", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+
+});
+
+app.get("/users.json", (req, res) => {
+  res.json(userDatabase);
 });
 
 // "My URLs" page
@@ -74,7 +79,7 @@ app.get("/urls", (req, res) => {
 });
 
 // --- "Register" Page ---
-app.get('/urls/register', (req, res) => {
+app.get('/register', (req, res) => {
   const userId = req.cookies["user_id"];
   const userLoggedIn = req.cookies["user_login"];
   const templateVars = {
@@ -98,7 +103,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 // --- "Login" Page --- (when user is logged out)
-app.get('/urls/login', (req, res) => {
+app.get('/login', (req, res) => {
   const userId = req.cookies["user_id"];
   const userLoggedIn = req.cookies["user_login"];
   const templateVars = {
@@ -110,7 +115,7 @@ app.get('/urls/login', (req, res) => {
 });
 
 // --- "Logout" Page --- (when user is logged in)
-app.get('/urls/logout', (req, res) => {
+app.get('/logout', (req, res) => {
   const userId = req.cookies["user_id"]
   const userLoggedIn = req.cookies["user_login"]
   const templateVars = {
@@ -143,8 +148,6 @@ app.get("/urls/:shortURL", (req, res) => {
 // Redirect the short url to long url
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  // const userId = req.cookies["user_id"];
-  // const userLoggedIn = req.cookies["user_login"];
   if (longURL) {
     res.redirect(longURL);
   } else {
@@ -220,30 +223,24 @@ app.post('/login', (req, res) => {
     return res.status(400).send('Please fill out login with your email and password.');
   }
 
-
   // If password or email does, or does not match userDatabase
   const userEmailPassword = (userDatabase) => {
     const userVals = Object.values(userDatabase);
 
     for (let i = 0; i < userVals.length; i++) {
+      console.log(email, userVals[i].email);
       if (email === userVals[i].email) {
         const hash = userVals[i].password;
-        const isMatch = bcrypt.compare(password, hash);
+        const isMatch = bcrypt.compareSync(password, hash);
 
         if (isMatch) {
-          console.log("Password is a match");
           const userID = userVals[i].id;
           res.cookie("user_id", userID);
-          res.redirect('/urls');
-        } else {
-          console.log(password, hash);
-          console.log("wrong password or username");
-          res.status(400).send('Username or password does not exist.');
-        };
-      } else if (email !== userVals[i].email) {
-        res.status(400).send('Username or password does not exist')
+          return res.redirect('/urls');
+        }
       }
     }
+    res.status(400).send('Username or password does not exist')
   };
 
   const userID = userEmailPassword(userDatabase);
