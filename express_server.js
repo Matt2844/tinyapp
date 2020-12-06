@@ -174,12 +174,20 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-// Redirect after url is deleted
+// Editing a short url
 app.post('/urls/:id', (req, res) => {
   const newLongURL = req.body.longURL;
   const shortURL = req.params.id;
   urlDatabase[shortURL].longURL = newLongURL;
-  res.redirect('/urls');
+  const userId = req.cookies["user_id"]
+  const userUrl = urlDatabase[shortURL].userID;
+
+  if (userId === userUrl) {
+    console.log('working')
+    res.redirect('/urls');
+  } else {
+    res.status(400).send('Sorry cannot edit this short url.')
+  }
 })
 
 // --- Register Page --- (when a user tries to register)
