@@ -170,8 +170,15 @@ app.post("/urls", (req, res) => {
 
 // Delete a url from the "My URLs" page
 app.post('/urls/:shortURL/delete', (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect('/urls');
+  const userId = req.cookies["user_id"]
+  const userUrl = urlDatabase[req.params.shortURL].userID;
+
+  if (userId === userUrl) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect('/urls');
+  } else {
+    res.status(400).send("Sorry you cannot delete this url");
+  }
 });
 
 // Editing a short url
@@ -183,7 +190,6 @@ app.post('/urls/:id', (req, res) => {
   const userUrl = urlDatabase[shortURL].userID;
 
   if (userId === userUrl) {
-    console.log('working')
     res.redirect('/urls');
   } else {
     res.status(400).send('Sorry cannot edit this short url.')
